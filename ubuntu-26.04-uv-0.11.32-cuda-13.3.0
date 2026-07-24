@@ -36,7 +36,8 @@ COPY --from=ghcr.io/astral-sh/uv:0.11.32 /uv /uvx /usr/local/bin/
 # The openGL dependencies are required by environments that use PyVista.
 # libreadline, libncurses, and libtinfo are required by nnn.
 RUN apt-get update && \
-    apt-get install --assume-yes --no-install-recommends \
+    DEBIAN_FRONTEND=noninteractive apt-get install \
+        --assume-yes --no-install-recommends \
         ca-certificates curl zip unzip tar git git-lfs pkg-config \
         build-essential cmake ninja-build \
         libx11-dev libxcursor-dev libxi-dev libxinerama-dev libxrandr-dev \
