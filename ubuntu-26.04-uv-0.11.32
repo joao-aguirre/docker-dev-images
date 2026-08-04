@@ -34,7 +34,7 @@ RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install \
         --assume-yes --no-install-recommends \
         ca-certificates curl zip unzip tar git git-lfs pkg-config \
-        libx11-6 libgl1 libxrender1 libxext6 xvfb \
+        build-essential libx11-6 libgl1 libxrender1 libxext6 xvfb \
         libreadline8t64 libncursesw6 libtinfo6 \
         bash-completion tmux lsd bat fzf ripgrep fd-find && \
     rm --recursive --force /var/lib/apt/lists/*
