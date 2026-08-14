@@ -29,12 +29,15 @@ COPY --from=ghcr.io/astral-sh/uv:0.11.32 /uv /uvx /usr/local/bin/
 
 # Install Linux tools & uv dependencies.
 # The openGL dependencies are required by environments that use PyVista.
-# libreadline, libncurses, and libtinfo are required by nnn.
+# - libreadline8t64, libncursesw6, and libtinfo6 are required by nnn.
+# - libglib2.0-0 (or libglib2.0-0t64) is a common requirement by OpenCV. 
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install \
         --assume-yes --no-install-recommends \
-        ca-certificates curl zip unzip tar git git-lfs pkg-config \
-        build-essential libx11-6 libgl1 libxrender1 libxext6 xvfb \
+        ca-certificates build-essential \
+        curl zip unzip tar git git-lfs pkg-config \
+        libx11-6 libgl1 libxrender1 libxext6 libglu1-mesa \
+        xvfb xauth mesa-utils libglib2.0-0 \
         libreadline8t64 libncursesw6 libtinfo6 \
         bash-completion tmux lsd bat fzf ripgrep fd-find && \
     rm --recursive --force /var/lib/apt/lists/*
