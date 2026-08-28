@@ -1,0 +1,73 @@
+# syntax=docker/dockerfile:1
+
+# Image derived from the basic Ubuntu + Python + CLI tools with LaTex installed
+# for scientific writing. I also use this image to work with Manin, as it also
+# needs LaTeX to do math equation animations.
+
+FROM ghcr.io/joao-aguirre/ubuntu-uv:latest
+
+ARG BUILD_DATE
+ARG VCS_REF
+ARG IMAGE_VERSION
+
+LABEL org.opencontainers.image.authors="Joao Aguirre" \
+    org.opencontainers.image.source="https://github.com/joao-aguirre/docker-dev-images" \
+    org.opencontainers.image.description="Base Ubuntu + uv + CLI tools + LaTeX container" \
+    org.opencontainers.image.licenses="MIT" \
+    org.opencontainers.image.created="${BUILD_DATE}" \
+    org.opencontainers.image.revision="${VCS_REF}" \
+    org.opencontainers.image.version="${IMAGE_VERSION}"
+
+# Install Linux tools & uv dependencies.
+# - `build-essential` and the other packages with it are required by Manin
+# - Zathura is installed as a PDF viewer for LaTeX
+#     - Zathura requires `dbus-x11` (`dbus-launch`) to be used with `synctex`
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install \
+        --assume-yes --no-install-recommends \
+        build-essential ffmpeg python3-dev \
+        libcairo2-dev libpango1.0-dev dvisvgm \
+        zathura dbus-x11 && \
+    rm --recursive --force /var/lib/apt/lists/*
+
+# Additional CLI tools that are not available on apt.
+# Application versions and checksums.
+# When updating a version, do not forget to update the file checksim as well.
+
+# TexLab: https://github.com/latex-lsp/texlab/releases
+ARG TEXLAB_VERSION=5.26.0
+ARG TEXLAB_SHA256="8697bd5e479d4584b14b7eed5c320c80ec4e1d91ebefbb6801e6bf38e9971300"
+
+# Tectonic: https://github.com/tectonic-typesetting/tectonic/tags
+ARG TECTONIC_VERSION=0.17.0
+ARG TECTONIC_SHA256="1a715688baf591e650c8aeb160ae934e181685eecbb38b317de30b269ac5d606"
+
+# Install TexLab. 
+RUN curl --fail --silent --show-error --location \
+        "https://github.com/latex-lsp/texlab/releases/download/v${TEXLAB_VERSION}/texlab-x86_64-linux.tar.gz" \
+        --output /tmp/texlab.tar.gz && \
+    printf "%s  %s\n" \
+        "${TEXLAB_SHA256}" \
+        "/tmp/texlab.tar.gz" | sha256sum --check --strict && \
+    tar --extract --gzip --file /tmp/texlab.tar.gz --directory /tmp && \
+    install --mode 0755 \
+        "/tmp/texlab" /usr/local/bin/texlab && \
+    rm --recursive --force /tmp/texlab.tar.gz /tmp/texlab && \
+    texlab --version
+
+# Install Tectonic. 
+RUN curl --fail --silent --show-error --location \
+        "https://github.com/tectonic-typesetting/tectonic/releases/download/tectonic%400.17.0/tectonic-${TECTONIC_VERSION}-x86_64-unknown-linux-gnu.tar.gz" \
+        --output /tmp/tectonic.tar.gz && \
+    printf "%s  %s\n" \
+        "${TECTONIC_SHA256}" \
+        "/tmp/tectonic.tar.gz" | sha256sum --check --strict && \
+    tar --extract --gzip --file /tmp/tectonic.tar.gz --directory /tmp && \
+    install --mode 0755 \
+        "/tmp/tectonic" /usr/local/bin/tectonic && \
+    rm --recursive --force /tmp/tectonic.tar.gz /tmp/tectonic && \
+    tectonic --version
+
+# Set the default workspace folder and shell.
+WORKDIR /workspaces
+CMD ["/bin/bash"]
