@@ -102,9 +102,9 @@ ARG NEOVIM_SHA256="bce0f56eda1f1b1db6eee8f4133d7a38813ea07933837dd1777411ca384c6
 ARG TREESITTER_VERSION=0.26.13
 ARG TREESITTER_SHA256="1b781c0dc1dfefea44b5db2ec2a58440fe9d006856c3f5b3fd9a17119d1138a2"
 
-# LanguageTool: https://internal1.languagetool.org/snapshots/
-ARG LANGUAGETOOL_VERSION=6.9
-ARG LANGUAGETOOL_SHA256="197a499fc94d742db031d24eb21c12e84c17e5c02ebf0fc13ea548fef99385b3"
+# LanguageTool: https://languagetool.org/download/
+ARG LANGUAGETOOL_VERSION=6.6
+ARG LANGUAGETOOL_SHA256="53600506b399bb5ffe1e4c8dec794fd378212f14aaf38ccef9b6f89314d11631"
 
 # OpenAI Codex: https://github.com/openai/codex/releases
 ARG CODEX_VERSION=0.150.1
@@ -229,13 +229,12 @@ RUN curl --fail --silent --show-error --location \
 
 # Install LanguageTool.
 RUN curl --fail --silent --show-error --location \
-        "https://internal1.languagetool.org/snapshots/LanguageTool-latest-snapshot.zip" \
-        --output /tmp/LanguageTool-latest-snapshot.zip && \
+        "https://languagetool.org/download/LanguageTool-stable.zip" \
+        --output /tmp/LanguageTool-stable.zip && \
     printf "%s  %s" \
         "${LANGUAGETOOL_SHA256}" \
-        "/tmp/LanguageTool-latest-snapshot.zip" | sha256sum --check --strict && \
-    unzip /tmp/LanguageTool-latest-snapshot.zip -d /opt && \
-    mv /opt/LanguageTool-${LANGUAGETOOL_VERSION}-SNAPSHOT /opt/LanguageTool-${LANGUAGETOOL_VERSION} && \
+        "/tmp/LanguageTool-stable.zip" | sha256sum --check --strict && \
+    unzip /tmp/LanguageTool-stable.zip -d /opt && \
     touch /opt/LanguageTool-${LANGUAGETOOL_VERSION}/server.properties
 
 # Install Codex.
