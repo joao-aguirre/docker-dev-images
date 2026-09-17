@@ -38,6 +38,7 @@ COPY --from=ghcr.io/astral-sh/uv:0.12.7 /uv /uvx /usr/local/bin/
 # - `libglib2.0-0` (or `libglib2.0-0t64`) is a common requirement by OpenCV
 # - `openjdk-21-jre-headless` is used by the LanguageTool server
 # - `bubblewrap` is required by Codex
+# - `xclip` is required by Neovim
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install \
         --assume-yes --no-install-recommends \
@@ -50,7 +51,7 @@ RUN apt-get update && \
         libxft2 libxrender1 libxext6 libxcursor1 libxinerama1 \
         libglib2.0-0 libreadline8t64 libncursesw6 libtinfo6 \
         bash-completion man-db bubblewrap tmux lsd bat fzf ripgrep fd-find \
-        openjdk-21-jre-headless && \
+        openjdk-21-jre-headless xclip && \
     rm -rf /var/lib/apt/lists/*
 
 # Create the symlinks to bat and fd, since the installed versions on Ubuntu
